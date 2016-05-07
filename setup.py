@@ -7,6 +7,12 @@ setup(
     package_dir={'integrity': 'integrity'},
     include_package_data=True,
     install_requires=[
+        'arrow',
+        'click',
+        'dictdiffer',
+        'pymongo',
+        'xxhash',
+        'pyyaml',
     ],
     entry_points='''
         [console_scripts]
