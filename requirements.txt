@@ -1,0 +1,7 @@
+arrow
+click
+dictdiffer
+pymongo
+xxhash
+pyyaml
+git+https://github.com/jmcgeheeiv/pyfakefs.git
