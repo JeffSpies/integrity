@@ -3,7 +3,8 @@ from setuptools import setup
 setup(
     name='integrity',
     version='0.0.1',
-    py_modules=['integrity'],
+    packages=['integrity'],
+    package_dir={'integrity': 'integrity'},
     include_package_data=True,
     install_requires=[
     ],
