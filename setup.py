@@ -11,7 +11,6 @@ setup(
         'click',
         'dictdiffer',
         'pymongo',
-        'xxhash',
         'pyyaml',
     ],
     entry_points='''

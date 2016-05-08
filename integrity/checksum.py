@@ -1,15 +1,5 @@
-import hashlib
-import xxhash
 
-
-algos = {
-    'md5': hashlib.md5,
-    'sha256': hashlib.sha256,
-    'xxhash': xxhash.xxh64
-}
-
-
-def get_checksums(filename, algos={'xxhash': xxhash.xxh64}, chunk_size=8096*2):
+def get_checksums(filename, algos, chunk_size=8096*2):
     results = {}
     classes = {}
 
@@ -30,7 +20,7 @@ def get_checksums(filename, algos={'xxhash': xxhash.xxh64}, chunk_size=8096*2):
     return results
 
 
-def get_checksum(filename, algo=xxhash.xxh64, chunk_size=8096*2):
+def get_checksum(filename, algo, chunk_size=8096*2):
     m = algo()
     with open(filename, 'rb') as f:
         while True :
@@ -40,7 +30,3 @@ def get_checksum(filename, algo=xxhash.xxh64, chunk_size=8096*2):
             m.update(d)
     d = m.hexdigest()
     return d
-
-
-def get_xxhash(filename):
-    return get_checksum(filename, algo=xxhash.xxh64)

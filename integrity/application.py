@@ -105,7 +105,7 @@ class Application:
                 return True
         return False
 
-    def create_check(self, hash=False):
+    def create_check(self, hashes=None):
 
         if self.has_previous_check_file():
             CheckDiffer(self.previous_check_path).create_diff(path=self.check_path)
@@ -118,7 +118,7 @@ class Application:
         )
         self.log.write(action='STAT', params=self._check.action('begin')) if self.log else ''
 
-        self._check.stat_directory(hash=hash)
+        self._check.stat_directory(hashes=hashes)
 
         previous_data_filename = self.rotate_data_file()
         self.write_data_file()

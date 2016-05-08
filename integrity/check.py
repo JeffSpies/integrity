@@ -51,7 +51,7 @@ class Check(Action):
     def remove_partial_log(self):
         os.remove(self.partial_log.path)
 
-    def run_path(self, relative_path, filename, hash):
+    def run_path(self, relative_path, filename, hashes):
         data = {
             'file': filename
         }
@@ -62,8 +62,8 @@ class Check(Action):
 
         try:
             stat_info = os.stat(full_path)
-            if hash:
-                data['hashes'] = get_checksums(full_path)
+            if hashes:
+                data['hashes'] = get_checksums(full_path, algos=hashes)
             data.update({
                 'bytes': stat_info.st_size,
                 'ctime': stat_info.st_ctime,
@@ -74,18 +74,55 @@ class Check(Action):
 
         return data, error
 
-    def stat_directory(self, hash=False):
+    def generate_hash_dict(self, hashes):
+
+        h = {}
+
+        try:
+            import hashlib
+        except:
+            pass
+        try:
+            import xxhash
+        except:
+            pass
+
+        others = {
+            "xxh64": lambda:xxhash.xxh64,
+            "xxh32": lambda:xxhash.xxh32
+        }
+
+        for hash_name in hashes:
+            lower = hash_name.lower()
+            try:
+                if lower in hashlib.algorithms_available:
+                    h[lower] = hashlib.__dict__[lower]
+                elif lower in others:
+                    h[lower] = others[lower]()
+                else:
+                    print("Couldn't find hashing algorithm {}".format(lower))
+
+            except:
+                print("Couldn't find hashing algorithm {}".format(lower))
+
+        return h
+
+    def stat_directory(self, hashes):
         count = 0
 
+        hash_dict = self.generate_hash_dict(hashes)
+
         for path, directory_names, file_names in os.walk(self.source):
-            print("Stat'ing {} (hash={})".format(path, hash))
+            print("Stat'ing {} (hash={})".format(path, hashes))
             for filename in file_names:
                 file_path = os.path.join(path, filename)
                 relative_directory = make_relative_path(self.source, path)
                 relative_path = os.path.join(relative_directory, filename)
                 if not did_any_pattern_match(file_path, self.ignore_list):
                     if relative_path not in self._data:
-                        file_data, error = self.run_path(path, filename, hash)
+                        file_data, error = self.run_path(path, filename, hash_dict)
+                        if error:
+                            print('Error', error)
                         file_data['dir'] = relative_directory
                         self._data[relative_path] = file_data
                         self.partial_log.write(

@@ -4,10 +4,12 @@ import click
 
 
 @click.command()
-@click.argument('path')
-def cli(path):
+@click.argument('path', type=click.Path(exists=True))
+@click.option('--hash', '-h', multiple=True)
+def cli(path, hash):
+    hashes = [i for i in hash]
     app = Application(path)
-    app.create_check(hash=True)
+    app.create_check(hashes=hashes)
 
 # pip install --editable .; integrity ./testdir
 
